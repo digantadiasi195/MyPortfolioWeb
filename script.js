@@ -1,31 +1,83 @@
-// Smooth scrolling for navigation links
+// Wait for DOM to be fully loaded
 document.addEventListener('DOMContentLoaded', function() {
-    // Add scroll reveal animation
-    const sections = document.querySelectorAll('section');
+    // Scroll reveal animation
+    const revealElements = document.querySelectorAll('.education-item, .skill-category, .interest-item, .project-item');
     
-    window.addEventListener('scroll', function() {
-        const scrollPosition = window.scrollY + window.innerHeight * 0.8;
+    // Initial check for elements in viewport
+    checkReveal();
+    
+    // Check elements on scroll
+    window.addEventListener('scroll', checkReveal);
+    
+    function checkReveal() {
+        const windowHeight = window.innerHeight;
+        const revealPoint = 150;
         
-        sections.forEach(section => {
-            const sectionTop = section.offsetTop;
-            const sectionHeight = section.offsetHeight;
+        revealElements.forEach(element => {
+            const elementTop = element.getBoundingClientRect().top;
             
-            if (scrollPosition > sectionTop && scrollPosition < sectionTop + sectionHeight) {
-                section.classList.add('active');
+            if (elementTop < windowHeight - revealPoint) {
+                element.classList.add('visible');
             }
+        });
+    }
+    
+    // Skill hover effect
+    const skillItems = document.querySelectorAll('.skill-list li');
+    
+    skillItems.forEach(item => {
+        item.addEventListener('mouseenter', function() {
+            this.style.color = getComputedStyle(document.documentElement).getPropertyValue('--primary');
+        });
+        
+        item.addEventListener('mouseleave', function() {
+            this.style.color = '';
         });
     });
     
-    // Add hover effect for project items
+    // Project item hover effect
     const projectItems = document.querySelectorAll('.project-item');
     
     projectItems.forEach(item => {
         item.addEventListener('mouseenter', function() {
-            this.style.backgroundColor = '#f8f9fa';
+            const heading = this.querySelector('h3');
+            if (heading) {
+                heading.style.color = getComputedStyle(document.documentElement).getPropertyValue('--primary');
+            }
         });
         
         item.addEventListener('mouseleave', function() {
-            this.style.backgroundColor = 'white';
+            const heading = this.querySelector('h3');
+            if (heading) {
+                heading.style.color = '';
+            }
         });
+    });
+    
+    // Smooth scrolling for navigation (if you add navigation later)
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            const targetId = this.getAttribute('href');
+            const targetElement = document.querySelector(targetId);
+            
+            if (targetElement) {
+                window.scrollTo({
+                    top: targetElement.offsetTop,
+                    behavior: 'smooth'
+                });
+            }
+        });
+    });
+    
+    // Add a subtle parallax effect to the header
+    const header = document.querySelector('header');
+    
+    window.addEventListener('scroll', function() {
+        const scrollPosition = window.scrollY;
+        if (scrollPosition < 600) {
+            header.style.backgroundPosition = `center ${scrollPosition * 0.5}px`;
+        }
     });
 });
